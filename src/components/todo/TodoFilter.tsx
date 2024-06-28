@@ -9,9 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useAppDispatch } from "@/redux/hooks";
+import { highToLow, lowToHigh, medium } from "@/redux/features/todoSlice";
 
 const TodoFilter = () => {
   const [position, setPosition] = React.useState("bottom");
+  const dispatch = useAppDispatch();
 
   return (
     <DropdownMenu>
@@ -22,9 +25,24 @@ const TodoFilter = () => {
         <DropdownMenuLabel>Filter by priority</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          <DropdownMenuRadioItem value="high">High</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="medium">Medium</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="low">low</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            onClick={() => dispatch(highToLow())}
+            value="high"
+          >
+            High
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            onClick={() => dispatch(medium())}
+            value="medium"
+          >
+            Medium
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem
+            onClick={() => dispatch(lowToHigh())}
+            value="low"
+          >
+            low
+          </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

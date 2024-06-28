@@ -10,43 +10,43 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { Icons } from "../ui/Icons";
 import { useAppDispatch } from "@/redux/hooks";
-import { addTask } from "@/redux/features/todoSlice";
+import { editTask } from "@/redux/features/todoSlice";
+import { ITodo } from "@/redux/interface/TodoTypes";
 
-const AddTodoModal = () => {
-  const [task, setTask] = useState("");
-  const [description, setDescription] = useState("");
-  const [credit, setCredit] = useState("");
+const EditTodoModal = ({ id, title, description, credit }: ITodo) => {
+  const [taskTitle, setTaskTitle] = useState(title || "");
+  const [taskDescription, setTaskDescription] = useState(description || "");
+  const [taskCredit, setTaskCredit] = useState(credit?.toString() || "");
   const dispatch = useAppDispatch();
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const randomId = Math.random().toString(36).substring(2, 7);
-
-    const taskDetails = {
-      id: randomId,
-      title: task,
-      description: description,
-      credit: parseInt(credit),
+    const editDetails: ITodo = {
+      id: id,
+      title: taskTitle,
+      description: taskDescription,
+      credit: parseInt(taskCredit),
     };
 
-    dispatch(addTask(taskDetails));
-    setTask("");
-    setDescription("");
-    setCredit("");
+    dispatch(editTask(editDetails));
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-primary-gradient font-semibold">Add todo</Button>
+        <Button className="bg-indigo-600">
+          <Icons.Edit className="size-6" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add task</DialogTitle>
+          <DialogTitle>Edit task</DialogTitle>
           <DialogDescription>
-            Please enter the details of the task you want to complete.
+            Please update the details of the task you want to complete.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit}>
@@ -57,9 +57,8 @@ const AddTodoModal = () => {
               </Label>
               <Input
                 id="title"
-                value={task}
-                required
-                onChange={(e) => setTask(e.target.value)}
+                value={taskTitle}
+                onChange={(e) => setTaskTitle(e.target.value)}
                 placeholder="Enter task title"
                 className="col-span-3 w-full"
               />
@@ -70,9 +69,8 @@ const AddTodoModal = () => {
               </Label>
               <Input
                 id="description"
-                value={description}
-                required
-                onChange={(e) => setDescription(e.target.value)}
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
                 placeholder="Enter task description"
                 className="col-span-3 w-full"
               />
@@ -83,19 +81,23 @@ const AddTodoModal = () => {
               </Label>
               <Input
                 id="credit"
-                value={credit}
-                required
                 type="number"
-                onChange={(e) => setCredit(e.target.value)}
+                value={taskCredit}
+                onChange={(e) => setTaskCredit(e.target.value)}
                 placeholder="Enter task credit"
                 className="col-span-3 w-full"
               />
             </div>
           </div>
           <div className="flex items-end justify-end mt-5">
-            <Button className="bg-primary-gradient font-semibold" type="submit">
-              Submit
-            </Button>
+            <DialogClose asChild>
+              <Button
+                className="bg-primary-gradient font-semibold"
+                type="submit"
+              >
+                Save and Change
+              </Button>
+            </DialogClose>
           </div>
         </form>
       </DialogContent>
@@ -103,4 +105,4 @@ const AddTodoModal = () => {
   );
 };
 
-export default AddTodoModal;
+export default EditTodoModal;

@@ -22,9 +22,32 @@ const todoSlice = createSlice({
       const completeTasks = state.tasks.filter((task) => task.isCompleted);
       state.tasks = [...incompleteTasks, ...completeTasks];
     },
+    editTask: (state, action: PayloadAction<ITodo>) => {
+      const task = state.tasks.find((task) => task.id === action.payload.id);
+      task!.title = action.payload.title;
+      task!.description = action.payload.description;
+      task!.credit = action.payload.credit;
+    },
+    highToLow: (state) => {
+      state.tasks.sort((a, b) => (b.credit ?? 0) - (a.credit ?? 0));
+    },
+    lowToHigh: (state) => {
+      state.tasks.sort((a, b) => (a.credit ?? 0) - (b.credit ?? 0));
+    },
+    medium: (state) => {
+      state.tasks;
+    },
   },
 });
 
-export const { addTask, removeTask, toggleComplete } = todoSlice.actions;
+export const {
+  addTask,
+  removeTask,
+  toggleComplete,
+  editTask,
+  highToLow,
+  medium,
+  lowToHigh,
+} = todoSlice.actions;
 
 export default todoSlice.reducer;

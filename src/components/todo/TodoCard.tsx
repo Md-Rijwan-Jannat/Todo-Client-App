@@ -3,8 +3,9 @@ import { Icons } from "../ui/Icons";
 import { Button } from "../ui/button";
 import { removeTask, toggleComplete } from "@/redux/features/todoSlice";
 import { ITodo } from "@/redux/interface/TodoTypes";
+import EditTodoModal from "./EditTodoModal";
 
-const TodoCard = ({ id, title, description, isCompleted }: ITodo) => {
+const TodoCard = ({ id, title, description, credit, isCompleted }: ITodo) => {
   const dispatch = useAppDispatch();
 
   const toggleHandler = () => {
@@ -33,13 +34,17 @@ const TodoCard = ({ id, title, description, isCompleted }: ITodo) => {
       )}
 
       <p>{description}</p>
+      <p>{credit}</p>
       <div className="flex flex-col md:flex-row gap-4">
         <Button onClick={() => dispatch(removeTask(id))} className="bg-red-500">
           <Icons.Trash className="size-6"></Icons.Trash>
         </Button>
-        <Button className="bg-indigo-600">
-          <Icons.Edit className="size-6"></Icons.Edit>
-        </Button>
+        <EditTodoModal
+          id={id}
+          title={title}
+          description={description}
+          credit={credit}
+        />
       </div>
     </div>
   );
