@@ -6,7 +6,9 @@ interface IContainerProps {
 
 const Container = ({ children }: IContainerProps) => {
   return (
-    <div className="h-screen w-full max-w-7xl mx-auto p-2">{children}</div>
+    <div className="h-screen w-full max-w-7xl mx-auto p-1 md:p-2 montserrat-regular">
+      {children}
+    </div>
   );
 };
 

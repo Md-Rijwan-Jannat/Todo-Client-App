@@ -12,37 +12,54 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Icons } from "../ui/Icons";
-import { useAppDispatch } from "@/redux/hooks";
-import { editTask } from "@/redux/features/todoSlice";
 import { ITodo } from "@/redux/interface/TodoTypes";
+import { useUpdateTaskDataMutation } from "@/redux/api/api";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Loader2 } from "lucide-react";
 
-const EditTodoModal = ({ id, title, description, credit }: ITodo) => {
+const EditTodoModal = ({ _id, title, description, priority }: ITodo) => {
   const [taskTitle, setTaskTitle] = useState(title || "");
   const [taskDescription, setTaskDescription] = useState(description || "");
-  const [taskCredit, setTaskCredit] = useState(credit?.toString() || "");
-  const dispatch = useAppDispatch();
+  const [taskPriority, setTaskPriority] = useState("");
+
+  const [updateTask, { isLoading, isError, isSuccess }] =
+    useUpdateTaskDataMutation();
+
+  console.log("update data:", { isLoading, isError, isSuccess });
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const editDetails: ITodo = {
-      id: id,
+    const editDetails = {
       title: taskTitle,
       description: taskDescription,
-      credit: parseInt(taskCredit),
+      priority: taskPriority,
     };
 
-    dispatch(editTask(editDetails));
+    const options = {
+      id: _id,
+      data: editDetails,
+    };
+
+    updateTask(options);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-indigo-600">
-          <Icons.Edit className="size-6" />
+        <Button size={"icon"} className="bg-indigo-600">
+          <Icons.Edit className="size-4 md:size-6" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-11/12 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit task</DialogTitle>
           <DialogDescription>
@@ -76,27 +93,44 @@ const EditTodoModal = ({ id, title, description, credit }: ITodo) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4 w-full">
-              <Label htmlFor="credit" className="text-left">
-                Credit
+              <Label htmlFor="priority" className="text-left">
+                Priority
               </Label>
-              <Input
-                id="credit"
-                type="number"
-                value={taskCredit}
-                onChange={(e) => setTaskCredit(e.target.value)}
-                placeholder="Enter task credit"
-                className="col-span-3 w-full"
-              />
+              <Select
+                value={priority}
+                onValueChange={(value) => setTaskPriority(value)}
+              >
+                <SelectTrigger className="col-span-3 text-gray-500">
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup className="text-gray-500">
+                    <SelectLabel>Priority</SelectLabel>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex items-end justify-end mt-5">
             <DialogClose asChild>
-              <Button
-                className="bg-primary-gradient font-semibold"
-                type="submit"
-              >
-                Save and Change
-              </Button>
+              {isLoading ? (
+                <Button
+                  className="bg-primary-gradient font-semibold w-20"
+                  type="submit"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </Button>
+              ) : (
+                <Button
+                  className="bg-primary-gradient font-semibold"
+                  type="submit"
+                >
+                  Save and Change
+                </Button>
+              )}
             </DialogClose>
           </div>
         </form>

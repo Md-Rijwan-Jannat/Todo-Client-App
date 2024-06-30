@@ -27,10 +27,11 @@ const TaskPagination = ({
   }
 
   return (
-    <Pagination className="mt-5">
-      <PaginationContent>
+    <Pagination>
+      <PaginationContent className="md:space-x-2">
         <PaginationItem>
           <PaginationPrevious
+            size={"sm"}
             className="bg-primary-gradient text-white hover:text-gray-300"
             href="#"
             onClick={(e) => {
@@ -57,6 +58,7 @@ const TaskPagination = ({
         ))}
         <PaginationItem>
           <PaginationNext
+            size={"sm"}
             className="bg-primary-gradient text-white hover:text-gray-300"
             href="#"
             onClick={(e) => {

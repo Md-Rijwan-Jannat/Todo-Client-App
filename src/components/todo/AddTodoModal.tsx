@@ -10,14 +10,26 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useAppDispatch } from "@/redux/hooks";
-import { addTask } from "@/redux/features/todoSlice";
+import { useAddTaskMutation } from "@/redux/api/api";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Loader2 } from "lucide-react";
 
 const AddTodoModal = () => {
-  const [task, setTask] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [credit, setCredit] = useState("");
-  const dispatch = useAppDispatch();
+  const [priority, setPriority] = useState("");
+  const [addTask, { data, isLoading, isError, isSuccess }] =
+    useAddTaskMutation();
+
+  console.log({ data, isLoading, isError, isSuccess });
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -26,15 +38,21 @@ const AddTodoModal = () => {
 
     const taskDetails = {
       id: randomId,
-      title: task,
+      title: title,
       description: description,
-      credit: parseInt(credit),
+      priority: priority,
+      isCompleted: false,
     };
 
-    dispatch(addTask(taskDetails));
-    setTask("");
+    // for local state post
+    // dispatch(addTask(taskDetails));
+
+    // for server post
+    addTask(taskDetails);
+
+    setTitle("");
     setDescription("");
-    setCredit("");
+    setPriority("");
   };
 
   return (
@@ -42,7 +60,7 @@ const AddTodoModal = () => {
       <DialogTrigger asChild>
         <Button className="bg-primary-gradient font-semibold">Add todo</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-11/12 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add task</DialogTitle>
           <DialogDescription>
@@ -57,9 +75,9 @@ const AddTodoModal = () => {
               </Label>
               <Input
                 id="title"
-                value={task}
+                value={title}
                 required
-                onChange={(e) => setTask(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter task title"
                 className="col-span-3 w-full"
               />
@@ -78,24 +96,43 @@ const AddTodoModal = () => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4 w-full">
-              <Label htmlFor="credit" className="text-left">
-                Credit
+              <Label htmlFor="priority" className="text-left">
+                Priority
               </Label>
-              <Input
-                id="credit"
-                value={credit}
-                required
-                type="number"
-                onChange={(e) => setCredit(e.target.value)}
-                placeholder="Enter task credit"
-                className="col-span-3 w-full"
-              />
+              <Select
+                value={priority}
+                onValueChange={(value) => setPriority(value)}
+              >
+                <SelectTrigger className="col-span-3 text-gray-500">
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup className="text-gray-500">
+                    <SelectLabel>Priority</SelectLabel>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex items-end justify-end mt-5">
-            <Button className="bg-primary-gradient font-semibold" type="submit">
-              Submit
-            </Button>
+            {isLoading ? (
+              <Button
+                className="bg-primary-gradient font-semibold w-20"
+                type="submit"
+              >
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </Button>
+            ) : (
+              <Button
+                className="bg-primary-gradient font-semibold w-20"
+                type="submit"
+              >
+                Submit
+              </Button>
+            )}
           </div>
         </form>
       </DialogContent>
